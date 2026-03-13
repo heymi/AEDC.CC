@@ -27,12 +27,10 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 w-full p-6 md:p-10 flex justify-between items-center z-50 mix-blend-difference">
       {!imgFailed ? (
-        // Loads the logo from the public folder. 
-        // If it fails (e.g., file not uploaded yet), it falls back to the text layout.
         <img 
-          src="/logo.png" 
+          src="/logo.svg" 
           alt="AEDC Logo" 
-          className="h-10 md:h-14 object-contain" 
+          className="h-12 md:h-16 object-contain" 
           onError={() => setImgFailed(true)}
         />
       ) : (
@@ -145,15 +143,23 @@ const Works = () => {
   const projects = [
     {
       id: "01",
-      title: "LUMINA",
-      category: "Spatial & Identity",
-      image: "https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=2800&auto=format&fit=crop",
+      title: "SkinCast",
+      category: "See what today means for your skin before your routine starts.",
+      image: "/skincast-poster-suggestion-suggestion-profile-2048x1536.png",
+      href: "https://skincast.aedc.cc",
+      imagePosition: "center center",
+      imageScale: 1,
+      imageFit: "contain",
+      frameClassName: "bg-[#f5f1ea] aspect-[4/5] md:aspect-[4/3]",
+      imageClassName: "p-4 md:p-8",
+      overlayClassName: "bg-black/5 group-hover:bg-black/0",
     },
     {
       id: "02",
       title: "AETHER",
       category: "Digital Experience",
       image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2800&auto=format&fit=crop",
+      hidden: true,
     }
   ];
 
@@ -173,7 +179,7 @@ const Works = () => {
       </div>
 
       <div className="flex flex-col gap-32 md:gap-48 max-w-[1400px] mx-auto">
-        {projects.map((project, index) => (
+        {projects.filter((project) => !project.hidden).map((project, index) => (
           <ProjectCard key={project.id} project={project} index={index} />
         ))}
       </div>
@@ -189,17 +195,20 @@ const ProjectCard = ({ project, index }: { project: any, index: number, key?: Re
   });
   
   const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
-
-  return (
-    <div ref={ref} className="group cursor-pointer">
-      <div className="overflow-hidden bg-[#111] aspect-[4/5] md:aspect-[16/9] relative mb-6 md:mb-10">
+  const cardContent = (
+    <>
+      <div className={`overflow-hidden bg-[#111] aspect-[4/5] md:aspect-[16/9] relative mb-6 md:mb-10 ${project.frameClassName ?? ""}`}>
         <motion.img 
-          style={{ y, scale: 1.15 }}
+          style={{
+            y,
+            scale: project.imageScale ?? 1.15,
+            objectPosition: project.imagePosition ?? "center center"
+          }}
           src={project.image} 
           alt={project.title}
-          className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-1000 ease-out"
+          className={`w-full h-full ${project.imageFit === "contain" ? "object-contain" : "object-cover"} opacity-60 group-hover:opacity-100 transition-all duration-1000 ease-out ${project.imageClassName ?? ""}`}
         />
-        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-1000 ease-out" />
+        <div className={`absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-1000 ease-out ${project.overlayClassName ?? ""}`} />
         
         {/* Hover overlay icon */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-700">
@@ -217,11 +226,36 @@ const ProjectCard = ({ project, index }: { project: any, index: number, key?: Re
           <p className="font-mono text-[10px] md:text-xs tracking-[0.2em] uppercase opacity-50">
             {project.category}
           </p>
+          {project.description ? (
+            <p className="mt-3 max-w-lg text-sm md:text-base leading-relaxed text-white/65">
+              {project.description}
+            </p>
+          ) : null}
         </div>
         <div className="font-mono text-[10px] md:text-xs tracking-[0.2em] opacity-50">
           {project.id}
         </div>
       </div>
+    </>
+  );
+
+  if (project.href) {
+    return (
+      <a
+        ref={ref}
+        className="group block cursor-pointer"
+        href={project.href}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {cardContent}
+      </a>
+    );
+  }
+
+  return (
+    <div ref={ref} className="group cursor-pointer">
+      {cardContent}
     </div>
   );
 };
@@ -239,9 +273,21 @@ const Footer = () => {
           </a>
         </div>
         <div className="flex flex-col gap-4 font-mono text-xs uppercase tracking-widest">
-          <a href="#" className="hover:underline">Instagram</a>
-          <a href="#" className="hover:underline">Behance</a>
-          <a href="#" className="hover:underline">Twitter</a>
+          <a
+            href="https://x.com/AEDCbranding"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 hover:underline"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-3.5 w-3.5"
+              fill="currentColor"
+            >
+              <path d="M18.244 2H21l-6.017 6.876L22 22h-5.482l-4.29-7.909L5.306 22H2.55l6.436-7.356L2 2h5.62l3.878 7.238zm-.967 18h1.527L6.79 3.895H5.152z" />
+            </svg>
+          </a>
         </div>
       </div>
       
